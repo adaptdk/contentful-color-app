@@ -1,8 +1,8 @@
 import { ConfigAppSDK } from '@contentful/app-sdk';
-import { Box, Button, Flex, Form, Heading, Notification, Paragraph, Switch, Tabs } from '@contentful/f36-components';
+import { Accordion, AccordionItem, Box, Button, Flex, Form, Heading, Notification, Paragraph, SectionHeading, Switch, Tabs } from '@contentful/f36-components';
 import { /* useCMA, */ useSDK } from '@contentful/react-apps-toolkit';
 import { css } from 'emotion';
-import { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { ConfigColorBar } from '../components/ConfigColorBar';
 import { DndContext, DragEndEvent } from '@dnd-kit/core';
 import { SortableContext, arrayMove } from '@dnd-kit/sortable';
@@ -16,12 +16,26 @@ export type TypeDefinedColor = {
 }
 
 export interface AppInstallationParameters {
-  definedColors: Array<TypeDefinedColor>
+  colorGroups: Array<{
+    id: number;
+    groupName: string;
+    definedColors: Array<TypeDefinedColor>
+  }>
 }
 
 const ConfigScreen = () => {
-  const [parameters, setParameters] = useState<AppInstallationParameters>({ definedColors: [] });
-const [colors, setColors] = useState(parameters?.definedColors || [])
+  const [parameters, setParameters] = useState<AppInstallationParameters>({
+    colorGroups: [
+      {
+        id: 0,
+        groupName: "Default",
+        definedColors: [],
+      },
+    ],
+  });
+  const [colorGroups, setColorGroups] = useState<AppInstallationParameters['colorGroups']>(
+    parameters.colorGroups || []
+  );
 
   const sdk = useSDK<ConfigAppSDK>();
 
@@ -30,15 +44,27 @@ const [colors, setColors] = useState(parameters?.definedColors || [])
     // or "Save" in the configuration screen.
     // for more details see https://www.contentful.com/developers/docs/extensibility/ui-extensions/sdk-reference/#register-an-app-configuration-hook
 
-    // Get current the state of EditorInterface and other entities
+    // Get the current state of EditorInterface and other entities
     // related to this app installation
     const currentState = await sdk.app.getCurrentState();
 
-    const formattedColors = colors.map(({ hexColor, label, ...color }) => {
-      return { ...color, hexColor: hexColor.toLowerCase(), label: label.trim() }
-    })
+    const formattedColorGroups = colorGroups.map(({ id, groupName, definedColors }) => {
+      const formattedColors = definedColors.map(({ hexColor, label, ...color }) => ({
+        ...color,
+        hexColor: hexColor.toLowerCase(),
+        label: label.trim(),
+      }));
 
-    const params = { ...parameters, definedColors: formattedColors }
+      return {
+        id,
+        groupName,
+        definedColors: formattedColors,
+      };
+    });
+
+    const params: AppInstallationParameters = {
+      colorGroups: formattedColorGroups,
+    };
 
     return {
       // Parameters to be persisted as the app configuration.
@@ -47,7 +73,7 @@ const [colors, setColors] = useState(parameters?.definedColors || [])
       // locations, you can just pass the currentState as is
       targetState: currentState,
     };
-  }, [parameters, sdk, colors]);
+  }, [colorGroups, sdk]);
 
   useEffect(() => {
     // `onConfigure` allows to configure a callback to be
@@ -58,70 +84,125 @@ const [colors, setColors] = useState(parameters?.definedColors || [])
 
   useEffect(() => {
     (async () => {
-      // Get current parameters of the app.
+      // Get the current parameters of the app.
       // If the app is not installed yet, `parameters` will be `null`.
       const currentParameters: AppInstallationParameters | null = await sdk.app.getParameters();
 
       if (currentParameters) {
         setParameters(currentParameters);
-        setColors(currentParameters.definedColors)
+
+        if (currentParameters?.colorGroups) {
+          setColorGroups(currentParameters.colorGroups);
+        }
       }
 
       // Once preparation has finished, call `setReady` to hide
-      // the loading screen and present the app to a user.
+      // the loading screen and present the app to the user.
       sdk.app.setReady();
     })();
   }, [sdk]);
 
   const onChange = ({ id, label, hexColor, remove }: TypeDefinedColor & { remove?: boolean }) => {
-    const updatedColors = [...colors];
-    const indexOfItem = updatedColors.findIndex((color) => color.id === id);
+    const updatedColorGroups = [...colorGroups];
+    const groupIndex = updatedColorGroups.findIndex((group) => group.definedColors.some((color) => color.id === id));
 
-    if (indexOfItem >= 0) {
-      if (remove) {
-        updatedColors.splice(indexOfItem, 1);
-        setColors(updatedColors);
-        return;
+    if (groupIndex >= 0) {
+      const colorIndex = updatedColorGroups[groupIndex].definedColors.findIndex((color) => color.id === id);
+
+      if (colorIndex >= 0) {
+        if (remove) {
+          updatedColorGroups[groupIndex].definedColors.splice(colorIndex, 1);
+          setColorGroups(updatedColorGroups);
+          return;
+        }
+
+        if (hexColor || hexColor === '') {
+          updatedColorGroups[groupIndex].definedColors[colorIndex].hexColor = hexColor;
+        }
+
+        if (label || label === '') {
+          updatedColorGroups[groupIndex].definedColors[colorIndex].label = label;
+        }
+
+        setColorGroups(updatedColorGroups);
       }
-
-      if (hexColor || hexColor === '') {
-        updatedColors[indexOfItem].hexColor = hexColor;
-      }
-
-      if (label || label === '') {
-        updatedColors[indexOfItem].label = label;
-      }
-
-      setColors(updatedColors);
     }
+  };
+
+  const handleAddItem = (groupId: number) => {
+    const updatedColorGroups = [...colorGroups];
+    const groupIndex = updatedColorGroups.findIndex((group) => group.id === groupId);
+
+    if (groupIndex >= 0) {
+      const group = updatedColorGroups[groupIndex];
+      const biggestId = Math.max(...group.definedColors.map(({ id }) => id));
+
+      if (biggestId >= 0) {
+        group.definedColors.push({ id: biggestId + 1, label: '', hexColor: '#000' });
+      } else {
+        group.definedColors.push({ id: 0, label: '', hexColor: '#000' });
+      }
+
+      setColorGroups(updatedColorGroups);
+    }
+  };
+
+  const handleAddGroup = () => {
+    const updatedColorGroups = [...colorGroups];
+    const biggestGroupId = Math.max(...updatedColorGroups.map(({ id }) => id))
+
+    if (biggestGroupId >= 0) {
+      const newId = biggestGroupId + 1;
+      updatedColorGroups.push({ id: newId, groupName: `Group ${newId}`, definedColors: [] })
+    } else {
+      updatedColorGroups.push({ id: 0, groupName: `Default`, definedColors: [] })
+    }
+
+    setColorGroups(updatedColorGroups);
   }
 
-  const handleAddItem = () => {
-    const biggestId = Math.max(...colors.map(({ id }) => id))
-    if (biggestId >= 0) {
-      setColors([...colors, { id: biggestId + 1, label: '', hexColor: '#000' }])
-      return
-    }
 
-    setColors([...colors, { id: 1, label: '', hexColor: '#000' }])
-  }
-
-  const handleDragEnd = (event: DragEndEvent) => {
+  const handleDragEnd = (event: DragEndEvent, groupId: number) => {
     const { active, over } = event;
 
     if (active && over && active.id !== over.id) {
-      setColors((items) => {
-        const oldIndex = items.findIndex((color) => color.id === active.id);
-        const newIndex = items.findIndex((color) => color.id === over.id);
+      setColorGroups((groups) => {
+        const updatedGroups = [...groups];
+        const currentIndex = updatedGroups.findIndex(({ id }) => id === groupId)
+        const currentGroup = updatedGroups[currentIndex];
 
-        return arrayMove(items, oldIndex, newIndex);
+        // Find the source color and target color within their respective groups
+        const sourceGroupIndex = updatedGroups.findIndex((group) =>
+          group.definedColors.some((color) => color.id === active.id)
+        );
+        const targetGroupIndex = updatedGroups.findIndex((group) =>
+          group.definedColors.some((color) => color.id === over.id)
+        );
+
+        if (sourceGroupIndex >= 0 && targetGroupIndex >= 0) {
+          const sourceGroup = updatedGroups[sourceGroupIndex];
+          const targetGroup = updatedGroups[targetGroupIndex];
+
+          // Find the source color and target color indices within their groups
+          const sourceIndex = sourceGroup.definedColors.findIndex((color) => color.id === active.id);
+          const targetIndex = targetGroup.definedColors.findIndex((color) => color.id === over.id);
+
+          if (sourceIndex >= 0 && targetIndex >= 0) {
+            // Move the color from the source group to the target group
+            const [removedColor] = sourceGroup.definedColors.splice(sourceIndex, 1);
+            targetGroup.definedColors.splice(targetIndex, 0, removedColor);
+          }
+        }
+
+        return updatedGroups;
       });
     }
   };
 
+
   const handleEditor = (text: string) => {
     try {
-      setColors(JSON.parse(text))
+      setColorGroups(JSON.parse(text))
       Notification.closeAll();
     } catch (e: any) {
       Notification.closeAll();
@@ -141,7 +222,7 @@ const [colors, setColors] = useState(parameters?.definedColors || [])
           A lot of things that you see here are only placeholders.
         </Paragraph>
 
-        <Heading>Color definitions</Heading>
+        <SectionHeading>Color definitions</SectionHeading>
         <Paragraph>
           You can edit your colors either via a graphical user interface, or via JSON!
         </Paragraph>
@@ -152,25 +233,32 @@ const [colors, setColors] = useState(parameters?.definedColors || [])
           </Tabs.List>
 
           <Tabs.Panel id="first">
-            <DndContext onDragEnd={handleDragEnd}>
-              <SortableContext items={colors}>
-                {colors?.map((color) => {
-                  return (
-                    <ConfigColorBar
-                      key={color.id}
-                      {...color}
-                      onChange={onChange}
-                    />
-                  )
-                })}
-            </SortableContext>
-            </DndContext>
-            <Button onClick={handleAddItem}>Add Color</Button>
+            <Accordion className={css({ marginBottom: '2rem' })}>
+              {colorGroups?.map(({ id, groupName, definedColors }) => (
+                <AccordionItem title={groupName} key={id}>
+                  <DndContext onDragEnd={(e) => handleDragEnd(e, id)}>
+                    <SortableContext items={definedColors}>
+                      {definedColors?.map((color) => {
+                        return (
+                          <ConfigColorBar
+                            key={color.id}
+                            {...color}
+                            onChange={onChange}
+                          />
+                        )
+                      })}
+                  </SortableContext>
+                  </DndContext>
+                  <Button onClick={() => handleAddItem(id)}>Add Color</Button>
+                </AccordionItem>
+              ))}
+            </Accordion>
+            <Button onClick={() => handleAddGroup()}>Add Group</Button>
           </Tabs.Panel>
 
           <Tabs.Panel id="second">
             <ReactCodeMirror
-              value={JSON.stringify(colors, null, 2)}
+              value={JSON.stringify(colorGroups, null, 2)}
               extensions={[json()]}
               onChange={handleEditor}
             />
