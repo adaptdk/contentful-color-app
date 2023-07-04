@@ -1,5 +1,7 @@
 This project was bootstrapped with [Create Contentful App](https://github.com/contentful/create-contentful-app).
 
+https://github.com/adaptdk/contentful-color-app/assets/69549795/66af738f-3a59-4e6b-b5b8-01416ed32271
+
 ## Examples
 ### Configure via GUI
 ![image](https://github.com/adaptdk/contentful-color-app/assets/69549795/2031544d-7786-4620-a797-fd53a30a85c1)
@@ -9,7 +11,6 @@ This project was bootstrapped with [Create Contentful App](https://github.com/co
 ![image](https://github.com/adaptdk/contentful-color-app/assets/69549795/a6ad90d4-4683-4f12-ba06-b441b2ed2d29)
 ### Access only validated colors in a content field
 ![image](https://github.com/adaptdk/contentful-color-app/assets/69549795/4b4a7800-6315-43cf-be00-8035a4cedc1f)
-
 
 ## How to use
 
