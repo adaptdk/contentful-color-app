@@ -1,19 +1,20 @@
-import React from 'react';
-import { FieldAppSDK } from '@contentful/app-sdk';
-import { Form, Menu } from '@contentful/f36-components';
-import { useFieldValue, useSDK } from '@contentful/react-apps-toolkit';
-import { css } from 'emotion';
-import { useEffect, useMemo, useState } from 'react';
-import { SelectColorButton } from '../components/SelectColorButton';
-import { TypeDefinedColor } from './ConfigScreen';
-import { ColorOptionItem } from '../components/ColorOptionItem';
+import { FieldAppSDK } from "@contentful/app-sdk";
+import { Form, Menu } from "@contentful/f36-components";
+import { useFieldValue, useSDK } from "@contentful/react-apps-toolkit";
+import { css } from "emotion";
+import React from "react";
+import { useEffect, useMemo, useState } from "react";
+
+import { ColorOptionItem } from "../components/ColorOptionItem";
+import { SelectColorButton } from "../components/SelectColorButton";
+import { TypeDefinedColor } from "./ConfigScreen";
 
 const styles = {
   displayNone: css({
-    display: 'none',
+    display: `none`,
   }),
   menuList: css({
-    width: 'calc(100% - 2px)', // -2px to keep borders visible
+    width: `calc(100% - 2px)`, // -2px to keep borders visible
     left: 0,
   }),
 };
@@ -28,18 +29,21 @@ const Field = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [value, setValue] = useFieldValue<string>();
 
-  const validationIn = sdk.field.validations.find(obj => Object.prototype.hasOwnProperty.call(obj, 'in'));
+  const validationIn = sdk.field.validations.find((obj) =>
+    Object.prototype.hasOwnProperty.call(obj, `in`)
+  );
   const theme = sdk.parameters.installation;
   const { definedColors: colors } = theme;
 
   const filteredColors = useMemo<TypeDefinedColor[]>(() => {
     if (validationIn?.in && validationIn?.in?.at(0)) {
-      return colors.filter(({ label }: { label: TypeDefinedColor['label']}) => validationIn?.in?.includes(label));
+      return colors.filter(({ label }: { label: TypeDefinedColor[`label`] }) =>
+        validationIn?.in?.includes(label)
+      );
     }
 
     return colors;
   }, [colors]);
-
 
   useEffect(() => {
     if (!isOpen) {
@@ -47,34 +51,37 @@ const Field = () => {
       return;
     }
 
-    const calculatedHeight =
-      HEIGHT_BASE + filteredColors.length * HEIGHT_ITEM;
+    const calculatedHeight = HEIGHT_BASE + filteredColors.length * HEIGHT_ITEM;
 
     sdk.window.updateHeight(calculatedHeight <= 400 ? calculatedHeight : 400);
   }, [isOpen, sdk, theme]);
 
-  const color = useMemo<TypeDefinedColor>(() => {
-    return colors.find((c: TypeDefinedColor) => c.label === value || c.hexColor === value);
-  }, [colors, value]);
+  const color = useMemo<TypeDefinedColor>(
+    () =>
+      colors.find(
+        (c: TypeDefinedColor) => c.label === value || c.hexColor === value
+      ),
+    [colors, value]
+  );
 
   const name = useMemo<string>(() => {
     switch (typeof value) {
-    case 'string':
-      if (color) {
-        return color.label;
-      }
+      case `string`:
+        if (color) {
+          return color.label;
+        }
 
-      return 'Invalid';
+        return `Invalid`;
 
-    case 'undefined':
-      if (sdk.field.required) {
-        return 'Invalid';
-      } else {
-        return 'Select a color…';
-      }
+      case `undefined`:
+        if (sdk.field.required) {
+          return `Invalid`;
+        } else {
+          return `Select a color…`;
+        }
 
-    default:
-      return 'Invalid';
+      default:
+        return `Invalid`;
     }
   }, [sdk.field.required, colors, value]);
 
@@ -96,10 +103,7 @@ const Field = () => {
 
         <Menu.List className={styles.menuList}>
           {filteredColors.map((color: TypeDefinedColor) => (
-            <Menu.Item
-              key={color.id}
-              onClick={() => setValue(color.label)}
-            >
+            <Menu.Item key={color.id} onClick={() => setValue(color.label)}>
               <ColorOptionItem color={color} />
             </Menu.Item>
           ))}
