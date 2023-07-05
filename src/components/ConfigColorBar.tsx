@@ -72,6 +72,7 @@ export const ConfigColorBar = ({ id, label, hexColor, onChange }: any) => {
         justifyContent={`center`}
         className={css({
           gap: `1rem`,
+          padding: `0.75rem`,
         })}
       >
         <Popover
@@ -80,18 +81,20 @@ export const ConfigColorBar = ({ id, label, hexColor, onChange }: any) => {
           onClose={() => setIsOpen(false)}
         >
           <Popover.Trigger>
-            <Box
-              onClick={() => setIsOpen(!isOpen)}
-              className={css({
-                backgroundColor: hexColor,
-                width: `40px`,
-                height: `40px`,
-                border: `1px solid #CFD9E0`,
-                borderRadius: `6px`,
-                cursor: `pointer`,
-                flexShrink: 0,
-              })}
-            />
+            <Tooltip placement={`right`} content={`Select color`}>
+              <Box
+                onClick={() => setIsOpen(!isOpen)}
+                className={css({
+                  backgroundColor: hexColor,
+                  width: `32px`,
+                  height: `32px`,
+                  border: `1px solid #CFD9E0`,
+                  borderRadius: `6px`,
+                  cursor: `pointer`,
+                  flexShrink: 0,
+                })}
+              />
+            </Tooltip>
           </Popover.Trigger>
           <Popover.Content className={css({ margin: `1rem` })}>
             <Box>
@@ -105,14 +108,20 @@ export const ConfigColorBar = ({ id, label, hexColor, onChange }: any) => {
           </Popover.Content>
         </Popover>
         <TextInput
+          size={`small`}
           value={hexColor}
           onChange={(e) => handleChange(e.target.value)}
         />
-        <TextInput value={label} onChange={(e) => setLabelValue(e)} />
+        <TextInput
+          size={`small`}
+          value={label}
+          onChange={(e) => setLabelValue(e)}
+        />
         <Tooltip placement={`top`} content={`Delete color`}>
           <IconButton
             aria-label={`Delete color`}
             variant={`negative`}
+            size={`small`}
             icon={<DeleteIcon />}
             onClick={() => onChange({ id, remove: true })}
           />

@@ -35,12 +35,14 @@ export type TypeDefinedColor = {
   hexColor: string;
 };
 
+export type TypeColorGroup = {
+  id: string;
+  groupName: string;
+  definedColors: Array<TypeDefinedColor>;
+};
+
 export interface AppInstallationParameters {
-  colorGroups: Array<{
-    id: string;
-    groupName: string;
-    definedColors: Array<TypeDefinedColor>;
-  }>;
+  colorGroups: Array<TypeColorGroup>;
 }
 
 const groupToolbarStyles = css({
@@ -324,6 +326,7 @@ const ConfigScreen = () => {
                 return (
                   <React.Fragment key={id}>
                     <AccordionItem
+                      titleElement={`h3`}
                       title={groupName}
                       className={css({ width: `100%` })}
                     >
@@ -388,7 +391,7 @@ const ConfigScreen = () => {
                       isShown={openedEditModalId === id}
                     >
                       <Modal.Header
-                        title={`${groupName}'s settings`}
+                        title={`Group "${groupName}" settings`}
                         onClose={closeEditModal}
                       />
                       <Modal.Content>
