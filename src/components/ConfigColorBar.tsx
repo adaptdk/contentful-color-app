@@ -81,20 +81,18 @@ export const ConfigColorBar = ({ id, label, hexColor, onChange }: any) => {
           onClose={() => setIsOpen(false)}
         >
           <Popover.Trigger>
-            <Tooltip placement={`right`} content={`Select color`}>
-              <Box
-                onClick={() => setIsOpen(!isOpen)}
-                className={css({
-                  backgroundColor: hexColor,
-                  width: `32px`,
-                  height: `32px`,
-                  border: `1px solid #CFD9E0`,
-                  borderRadius: `6px`,
-                  cursor: `pointer`,
-                  flexShrink: 0,
-                })}
-              />
-            </Tooltip>
+            <Box
+              onClick={() => setIsOpen(!isOpen)}
+              className={css({
+                backgroundColor: hexColor,
+                width: `32px`,
+                height: `32px`,
+                border: `1px solid #CFD9E0`,
+                borderRadius: `6px`,
+                cursor: `pointer`,
+                flexShrink: 0,
+              })}
+            />
           </Popover.Trigger>
           <Popover.Content className={css({ margin: `1rem` })}>
             <Box>

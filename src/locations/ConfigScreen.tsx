@@ -26,8 +26,10 @@ import { css } from "emotion";
 import React, { useCallback, useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
+import { ColorBox } from "../components/ColorBox";
 import { ConfigColorBar } from "../components/ConfigColorBar";
 import { WelcomeSection } from "../components/WelcomeSection";
+import { getRandomItem } from "../utils/getRandomItem";
 
 export type TypeDefinedColor = {
   id: string;
@@ -323,11 +325,22 @@ const ConfigScreen = () => {
                   return null;
                 }
 
+                const randomColor = getRandomItem(definedColors);
+
                 return (
                   <React.Fragment key={id}>
                     <AccordionItem
                       titleElement={`h3`}
-                      title={groupName}
+                      title={
+                        <Flex
+                          className={css({ fontSize: `1rem` })}
+                          justifyContent={`center`}
+                          alignItems={`center`}
+                          gap={`0.5rem`}
+                        >
+                          <ColorBox color={randomColor} /> {groupName}
+                        </Flex>
+                      }
                       className={css({ width: `100%` })}
                     >
                       <Flex
