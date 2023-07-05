@@ -1,4 +1,13 @@
-import { Box, Button, Card, DragHandle, Flex, Icon, Popover, TextInput } from '@contentful/f36-components';
+import {
+  Box,
+  Card,
+  DragHandle,
+  Flex,
+  IconButton,
+  Popover,
+  TextInput,
+  Tooltip
+} from '@contentful/f36-components';
 import { css } from 'emotion';
 import { useState } from 'react';
 import { DeleteIcon } from '@contentful/f36-icons';
@@ -87,9 +96,9 @@ export const ConfigColorBar = ({ id, label, hexColor, onChange }: any) => {
         {/* @ts-ignore */}
         <TextInput value={hexColor} onChange={(e) => handleChange(e.target.value)} />
         <TextInput value={label} onChange={(e) => setLabelValue(e)} />
-        <Button onClick={() => onChange({ id, remove: true })}>
-          <DeleteIcon variant={'negative'} />
-        </Button>
+        <Tooltip placement={'top'} content={'Delete color'}>
+          <IconButton aria-label={'Delete color'} variant={'negative'} icon={<DeleteIcon />} onClick={() => onChange({ id, remove: true })} />
+        </Tooltip>
       </Flex>
     </Card>
   )

@@ -6,14 +6,18 @@ import {
   Button,
   Flex,
   Form,
-  Heading,
+  IconButton,
+  Modal,
+  Note,
   Notification,
   Paragraph,
   SectionHeading,
-  Tabs
+  Tabs,
+  TextInput,
+  Tooltip
 } from '@contentful/f36-components';
-import { PlusIcon } from '@contentful/f36-icons';
-import { /* useCMA, */ useSDK } from '@contentful/react-apps-toolkit';
+import { DeleteIcon, EditIcon, PlusIcon } from '@contentful/f36-icons';
+import { useSDK } from '@contentful/react-apps-toolkit';
 import { css } from 'emotion';
 import React, { useCallback, useEffect, useState } from 'react';
 import { ConfigColorBar } from '../components/ConfigColorBar';
@@ -21,6 +25,8 @@ import { DndContext, DragEndEvent } from '@dnd-kit/core';
 import { SortableContext } from '@dnd-kit/sortable';
 import ReactCodeMirror from '@uiw/react-codemirror';
 import { json } from '@codemirror/lang-json';
+import { WelcomeSection } from '../components/WelcomeSection';
+import tokens from '@contentful/f36-tokens';
 
 export type TypeDefinedColor = {
   id: string;
@@ -36,12 +42,17 @@ export interface AppInstallationParameters {
   }>
 }
 
+const groupToolbarStyles = css({
+  backgroundColor: tokens.gray200,
+  borderRadius: tokens.borderRadiusMedium,
+});
+
 const ConfigScreen = () => {
   const [parameters, setParameters] = useState<AppInstallationParameters>({
     colorGroups: [
       {
         id: uuidv4(),
-        groupName: "Default",
+        groupName: 'Default',
         definedColors: [],
       },
     ],
@@ -49,6 +60,9 @@ const ConfigScreen = () => {
   const [colorGroups, setColorGroups] = useState<AppInstallationParameters['colorGroups']>(
     parameters.colorGroups || []
   );
+  const [openedEditModalId, setOpenedEditModalId] = useState<string>('');
+  const [openedDeleteModalId, setOpenedDeleteModalId] = useState<string>('');
+  const [modalGroupName, setModalGroupName] = useState<string>('');
 
   const sdk = useSDK<ConfigAppSDK>();
 
@@ -61,8 +75,8 @@ const ConfigScreen = () => {
     // related to this app installation
     const currentState = await sdk.app.getCurrentState();
 
-    const formattedColorGroups = colorGroups.map(({ id, groupName, definedColors }) => {
-      const formattedColors = definedColors.map(({ hexColor, label, ...color }) => ({
+    const formattedColorGroups = colorGroups?.map(({ id, groupName, definedColors }) => {
+      const formattedColors = definedColors?.map(({ hexColor, label, ...color }) => ({
         ...color,
         hexColor: hexColor.toLowerCase(),
         label: label.trim(),
@@ -156,11 +170,16 @@ const ConfigScreen = () => {
 
   const handleAddGroup = () => {
     const updatedColorGroups = [...colorGroups];
-    updatedColorGroups.push({ id: uuidv4(), groupName: `Untitled group`, definedColors: [] })
+    updatedColorGroups.push({ id: uuidv4(), groupName: 'Untitled group', definedColors: [] });
 
     setColorGroups(updatedColorGroups);
-  }
+  };
 
+  const handleDeleteGroup = (groupId: string, name: string) => {
+    const updatedGroups = colorGroups.filter(({ id }) => id !== groupId);
+    setColorGroups(updatedGroups);
+    Notification.success(`Deleted group "${name}"`);
+  };
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -197,28 +216,54 @@ const ConfigScreen = () => {
     }
   };
 
+  const handleEditModalOpen = (id: string) => {
+    setOpenedEditModalId(id);
+  };
+
+  const handleDeleteModalOpen = (id: string) => {
+    setOpenedDeleteModalId(id);
+  };
+
+  const handleModalSave = (groupId: string) => {
+    const updatedColorGroups = [...colorGroups];
+    const groupIndexToUpdate = updatedColorGroups.findIndex(({ id }) => id === groupId);
+
+    if (groupIndexToUpdate >= 0 && modalGroupName) {
+      updatedColorGroups[groupIndexToUpdate].groupName = modalGroupName;
+      setColorGroups(updatedColorGroups);
+
+      closeEditModal();
+    } else {
+      console.log({ groupIndexToUpdate, modalGroupName });
+      Notification.error('Change group name before confirming');
+    }
+
+    setModalGroupName('');
+  };
+
+  const closeEditModal = () => {
+    setOpenedEditModalId('');
+  };
+
+  const closeDeleteModal = () => {
+    setOpenedDeleteModalId('');
+  };
 
   const handleEditor = (text: string) => {
     try {
-      setColorGroups(JSON.parse(text))
+      setColorGroups(JSON.parse(text));
       Notification.closeAll();
     } catch (e: any) {
       Notification.closeAll();
       console.log(e);
       Notification.error(`${e?.name}: There's an error in your JSON!`);
     }
-  }
+  };
 
   return (
     <Flex flexDirection={'column'} className={css({ margin: '5rem auto', maxWidth: '800px' })}>
       <Form>
-        <Heading>Adaptive Colors</Heading>
-        <Paragraph>Hi,{' '}
-          <img className={css({ display: 'inline-block', borderRadius: '50%' })} src={sdk.user.avatarUrl} width={20} height={20} />
-          {' '}{sdk.user.firstName}!
-          This is a work in progress color picker app for Contentful.
-          A lot of things that you see here are only placeholders.
-        </Paragraph>
+        <WelcomeSection user={sdk.user} />
 
         <SectionHeading>Color definitions</SectionHeading>
         <Paragraph>
@@ -232,30 +277,91 @@ const ConfigScreen = () => {
 
           <Tabs.Panel id="first">
             <Accordion className={css({ marginBottom: '2rem' })}>
-              {colorGroups?.map(({ id, groupName, definedColors }) => (
-                <AccordionItem title={groupName} key={id}>
-                  <DndContext onDragEnd={handleDragEnd}>
-                    <SortableContext items={definedColors}>
-                      {definedColors?.map((color) => {
-                        return (
-                          <ConfigColorBar
-                            key={color.id}
-                            {...color}
-                            onChange={onChange}
-                          />
-                        )
-                      })}
-                  </SortableContext>
-                  </DndContext>
-                  <Button startIcon={<PlusIcon />} variant={'positive'} onClick={() => handleAddItem(id)}>Add Color</Button>
-                </AccordionItem>
-              ))}
+              {colorGroups?.map(({ id, groupName, definedColors }) => {
+                if (!groupName && !definedColors) {
+                  return null;
+                }
+
+                return (
+                  <React.Fragment key={id}>
+                    <AccordionItem
+                      title={groupName}
+                      className={css({ width: '100%' })}
+                    >
+                      <Flex className={groupToolbarStyles} marginBottom={'spacingM'} justifyContent={'space-between'} alignItems={'center'}>
+                        <SectionHeading marginLeft={'spacingM'} marginBottom={'none'}>Group settings</SectionHeading>
+                        <Flex>
+                          <Tooltip placement={'top'} content={'Edit group settings'}>
+                            <IconButton
+                              onClick={() => handleEditModalOpen(id)}
+                              variant={'transparent'}
+                              aria-label={'Edit group settings'}
+                              icon={<EditIcon />}
+                            />
+                          </Tooltip>
+                          <Tooltip placement={'top'} content={'Delete group'}>
+                            <IconButton
+                              onClick={() => handleDeleteModalOpen(id)}
+                              variant={'transparent'}
+                              aria-label={'Delete group'}
+                              icon={<DeleteIcon variant={'negative'} />}
+                            />
+                          </Tooltip>
+                        </Flex>
+                      </Flex>
+
+                      <DndContext onDragEnd={handleDragEnd}>
+                        <SortableContext items={definedColors}>
+                          {definedColors?.map((color) => {
+                            return (
+                              <ConfigColorBar
+                                key={color.id}
+                                {...color}
+                                onChange={onChange}
+                              />
+                            );
+                          })}
+                        </SortableContext>
+                      </DndContext>
+                      <Button startIcon={<PlusIcon />} variant={'positive'} onClick={() => handleAddItem(id)}>Add Color</Button>
+                    </AccordionItem>
+
+                    {/* Edit modal */}
+                    <Modal onClose={closeEditModal} isShown={openedEditModalId === id}>
+                      <Modal.Header title={`${groupName}'s settings`} onClose={closeEditModal}/>
+                      <Modal.Content>
+                        <SectionHeading marginBottom={'spacingM'}>Group name</SectionHeading>
+                        <TextInput defaultValue={groupName} onChange={(e) => setModalGroupName(e.target.value)} />
+                        <Modal.Controls>
+                          <Button variant={'negative'} onClick={closeEditModal}>Cancel</Button>
+                          <Button variant={'positive'} onClick={() => handleModalSave(id)}>Confirm changes</Button>
+                        </Modal.Controls>
+                      </Modal.Content>
+                    </Modal>
+
+                    {/* Delete modal */}
+                    <Modal onClose={closeDeleteModal} isShown={openedDeleteModalId === id}>
+                      <Modal.Header title={`Delete "${groupName}" group`} onClose={closeDeleteModal} />
+                      <Modal.Content>
+                        <Paragraph>Are you sure you want to delete &quot;<b>{groupName}</b>&quot; group?</Paragraph>
+                        <Paragraph>This action will delete the group with all of it&apos;s defined colors!</Paragraph>
+                        <Note variant={'warning'}>You can reverse this action by refreshing the page without clicking <b>Save</b>, but that will reset all of your unsaved changes!</Note>
+                        <Modal.Controls>
+                          <Button variant={'transparent'} onClick={closeDeleteModal}>Cancel</Button>
+                          <Button variant={'negative'} onClick={() => handleDeleteGroup(id, groupName)}>Delete group</Button>
+                        </Modal.Controls>
+                      </Modal.Content>
+                    </Modal>
+                  </React.Fragment>
+                );
+              })}
             </Accordion>
             <Button startIcon={<PlusIcon />} variant={'positive'} onClick={() => handleAddGroup()}>Add Group</Button>
           </Tabs.Panel>
 
           <Tabs.Panel id="second">
             <ReactCodeMirror
+              maxHeight={'600px'}
               value={JSON.stringify(colorGroups, null, 2)}
               extensions={[json()]}
               onChange={handleEditor}
