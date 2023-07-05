@@ -7,7 +7,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import { ColorOptionItem } from "../components/ColorOptionItem";
 import { SelectColorButton } from "../components/SelectColorButton";
-import { TypeDefinedColor } from "./ConfigScreen";
+import { TypeColorGroup, TypeDefinedColor } from "./ConfigScreen";
 
 const styles = {
   displayNone: css({
@@ -33,7 +33,11 @@ const Field = () => {
     Object.prototype.hasOwnProperty.call(obj, `in`)
   );
   const theme = sdk.parameters.installation;
-  const { definedColors: colors } = theme;
+  const { colorGroups } = theme;
+
+  const colors = colorGroups
+    .map((group: TypeColorGroup) => group.definedColors)
+    ?.flat();
 
   const filteredColors = useMemo<TypeDefinedColor[]>(() => {
     if (validationIn?.in && validationIn?.in?.at(0)) {
