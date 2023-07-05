@@ -1,23 +1,35 @@
 import { ConfigAppSDK } from '@contentful/app-sdk';
-import { Accordion, AccordionItem, Box, Button, Flex, Form, Heading, Notification, Paragraph, SectionHeading, Switch, Tabs } from '@contentful/f36-components';
+import { v4 as uuidv4 } from 'uuid';
+import {
+  Accordion,
+  AccordionItem,
+  Button,
+  Flex,
+  Form,
+  Heading,
+  Notification,
+  Paragraph,
+  SectionHeading,
+  Tabs
+} from '@contentful/f36-components';
 import { /* useCMA, */ useSDK } from '@contentful/react-apps-toolkit';
 import { css } from 'emotion';
 import React, { useCallback, useEffect, useState } from 'react';
 import { ConfigColorBar } from '../components/ConfigColorBar';
 import { DndContext, DragEndEvent } from '@dnd-kit/core';
-import { SortableContext, arrayMove } from '@dnd-kit/sortable';
+import { SortableContext } from '@dnd-kit/sortable';
 import ReactCodeMirror from '@uiw/react-codemirror';
 import { json } from '@codemirror/lang-json';
 
 export type TypeDefinedColor = {
-  id: number;
+  id: string;
   label: string;
   hexColor: string;
 }
 
 export interface AppInstallationParameters {
   colorGroups: Array<{
-    id: number;
+    id: string;
     groupName: string;
     definedColors: Array<TypeDefinedColor>
   }>
@@ -27,7 +39,7 @@ const ConfigScreen = () => {
   const [parameters, setParameters] = useState<AppInstallationParameters>({
     colorGroups: [
       {
-        id: 0,
+        id: uuidv4(),
         groupName: "Default",
         definedColors: [],
       },
@@ -129,19 +141,13 @@ const ConfigScreen = () => {
     }
   };
 
-  const handleAddItem = (groupId: number) => {
+  const handleAddItem = (groupId: string) => {
     const updatedColorGroups = [...colorGroups];
     const groupIndex = updatedColorGroups.findIndex((group) => group.id === groupId);
 
     if (groupIndex >= 0) {
       const group = updatedColorGroups[groupIndex];
-      const biggestId = Math.max(...group.definedColors.map(({ id }) => id));
-
-      if (biggestId >= 0) {
-        group.definedColors.push({ id: biggestId + 1, label: '', hexColor: '#000' });
-      } else {
-        group.definedColors.push({ id: 0, label: '', hexColor: '#000' });
-      }
+      group.definedColors.push({ id: uuidv4(), label: '', hexColor: '#000' });
 
       setColorGroups(updatedColorGroups);
     }
@@ -149,27 +155,18 @@ const ConfigScreen = () => {
 
   const handleAddGroup = () => {
     const updatedColorGroups = [...colorGroups];
-    const biggestGroupId = Math.max(...updatedColorGroups.map(({ id }) => id))
-
-    if (biggestGroupId >= 0) {
-      const newId = biggestGroupId + 1;
-      updatedColorGroups.push({ id: newId, groupName: `Group ${newId}`, definedColors: [] })
-    } else {
-      updatedColorGroups.push({ id: 0, groupName: `Default`, definedColors: [] })
-    }
+    updatedColorGroups.push({ id: uuidv4(), groupName: `Untitled group`, definedColors: [] })
 
     setColorGroups(updatedColorGroups);
   }
 
 
-  const handleDragEnd = (event: DragEndEvent, groupId: number) => {
+  const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
     if (active && over && active.id !== over.id) {
       setColorGroups((groups) => {
         const updatedGroups = [...groups];
-        const currentIndex = updatedGroups.findIndex(({ id }) => id === groupId)
-        const currentGroup = updatedGroups[currentIndex];
 
         // Find the source color and target color within their respective groups
         const sourceGroupIndex = updatedGroups.findIndex((group) =>
@@ -236,7 +233,7 @@ const ConfigScreen = () => {
             <Accordion className={css({ marginBottom: '2rem' })}>
               {colorGroups?.map(({ id, groupName, definedColors }) => (
                 <AccordionItem title={groupName} key={id}>
-                  <DndContext onDragEnd={(e) => handleDragEnd(e, id)}>
+                  <DndContext onDragEnd={handleDragEnd}>
                     <SortableContext items={definedColors}>
                       {definedColors?.map((color) => {
                         return (
