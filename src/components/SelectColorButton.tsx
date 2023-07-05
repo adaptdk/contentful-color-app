@@ -1,3 +1,4 @@
+import React from 'react';
 import { FieldAppSDK } from '@contentful/app-sdk';
 import { Button, ButtonGroup } from '@contentful/f36-components';
 import { ChevronDownIcon, CloseIcon } from '@contentful/f36-icons';

@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   Box,
   Card,
@@ -15,7 +16,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Color, ColorPicker, toColor, useColor } from 'react-color-palette';
 
-import "react-color-palette/lib/css/styles.css";
+import 'react-color-palette/lib/css/styles.css';
 
 export const ConfigColorBar = ({ id, label, hexColor, onChange }: any) => {
   const [color, setColor] = useColor('hex', hexColor);
@@ -24,28 +25,28 @@ export const ConfigColorBar = ({ id, label, hexColor, onChange }: any) => {
   const { attributes, listeners, setNodeRef, transform, transition, active } = useSortable({ id });
 
   const zIndex = active && active.id === id ? 1 : 0;
-    const style = {
-      transform: CSS.Translate.toString(transform),
-      transition,
-      zIndex,
-    };
+  const style = {
+    transform: CSS.Translate.toString(transform),
+    transition,
+    zIndex,
+  };
 
   const setLabelValue = (e: any) => {
     const { value } = e.target;
 
     onChange({ id, label: value });
-  }
+  };
 
   const handleChange = (color: Color | string) => {
     if (typeof color === 'string') {
-      const colorObject = toColor("hex", color);
-      setColor(colorObject)
+      const colorObject = toColor('hex', color);
+      setColor(colorObject);
       onChange({ id, hexColor: colorObject.hex });
     } else {
       setColor(color);
-      onChange({ id, hexColor: color.hex })
+      onChange({ id, hexColor: color.hex });
     }
-  }
+  };
 
   return (
     <Card
@@ -58,7 +59,7 @@ export const ConfigColorBar = ({ id, label, hexColor, onChange }: any) => {
           {...attributes}
           {...listeners}
         />
-        )}
+      )}
       padding="none"
       withDragHandle
       ref={setNodeRef}
@@ -93,7 +94,6 @@ export const ConfigColorBar = ({ id, label, hexColor, onChange }: any) => {
             </Box>
           </Popover.Content>
         </Popover>
-        {/* @ts-ignore */}
         <TextInput value={hexColor} onChange={(e) => handleChange(e.target.value)} />
         <TextInput value={label} onChange={(e) => setLabelValue(e)} />
         <Tooltip placement={'top'} content={'Delete color'}>
@@ -101,5 +101,5 @@ export const ConfigColorBar = ({ id, label, hexColor, onChange }: any) => {
         </Tooltip>
       </Flex>
     </Card>
-  )
-}
+  );
+};
