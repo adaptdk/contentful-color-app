@@ -12,6 +12,7 @@ import {
   SectionHeading,
   Tabs
 } from '@contentful/f36-components';
+import { PlusIcon } from '@contentful/f36-icons';
 import { /* useCMA, */ useSDK } from '@contentful/react-apps-toolkit';
 import { css } from 'emotion';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -246,11 +247,11 @@ const ConfigScreen = () => {
                       })}
                   </SortableContext>
                   </DndContext>
-                  <Button onClick={() => handleAddItem(id)}>Add Color</Button>
+                  <Button startIcon={<PlusIcon />} variant={'positive'} onClick={() => handleAddItem(id)}>Add Color</Button>
                 </AccordionItem>
               ))}
             </Accordion>
-            <Button onClick={() => handleAddGroup()}>Add Group</Button>
+            <Button startIcon={<PlusIcon />} variant={'positive'} onClick={() => handleAddGroup()}>Add Group</Button>
           </Tabs.Panel>
 
           <Tabs.Panel id="second">
