@@ -7,13 +7,9 @@ import {
   Flex,
   Form,
   IconButton,
-  Modal,
-  Note,
   Notification,
-  Paragraph,
   SectionHeading,
   Tabs,
-  TextInput,
   Tooltip,
 } from "@contentful/f36-components";
 import { DeleteIcon, EditIcon, PlusIcon } from "@contentful/f36-icons";
@@ -27,8 +23,11 @@ import React, { useCallback, useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 import { ColorBox } from "../components/ColorBox";
-import { ConfigColorBar } from "../components/ConfigColorBar";
-import { WelcomeSection } from "../components/WelcomeSection";
+import { ColorSection } from "../components/config/ColorSection";
+import { ConfigColorBar } from "../components/config/ConfigColorBar";
+import { DeleteModal } from "../components/config/DeleteModal";
+import { EditModal } from "../components/config/EditModal";
+import { WelcomeSection } from "../components/config/WelcomeSection";
 import { getRandomItem } from "../utils/getRandomItem";
 
 export type TypeDefinedColor = {
@@ -270,7 +269,6 @@ const ConfigScreen = () => {
 
       closeEditModal();
     } else {
-      console.log({ groupIndexToUpdate, modalGroupName });
       Notification.error(`Change group name before confirming`);
     }
 
@@ -303,12 +301,8 @@ const ConfigScreen = () => {
     >
       <Form>
         <WelcomeSection user={sdk.user} />
+        <ColorSection />
 
-        <SectionHeading>Color definitions</SectionHeading>
-        <Paragraph>
-          You can edit your colors either via a graphical user interface, or via
-          JSON!
-        </Paragraph>
         <Tabs defaultTab={`first`}>
           <Tabs.List
             className={css({ marginBottom: `2rem` })}
@@ -325,7 +319,8 @@ const ConfigScreen = () => {
                   return null;
                 }
 
-                const randomColor = getRandomItem(definedColors);
+                const randomColor: TypeDefinedColor =
+                  getRandomItem(definedColors);
 
                 return (
                   <React.Fragment key={id}>
@@ -378,6 +373,7 @@ const ConfigScreen = () => {
                         </Flex>
                       </Flex>
 
+                      {/* Color input bar */}
                       <DndContext onDragEnd={handleDragEnd}>
                         <SortableContext items={definedColors}>
                           {definedColors?.map((color) => (
@@ -389,6 +385,7 @@ const ConfigScreen = () => {
                           ))}
                         </SortableContext>
                       </DndContext>
+
                       <Button
                         startIcon={<PlusIcon />}
                         variant={`positive`}
@@ -399,75 +396,23 @@ const ConfigScreen = () => {
                     </AccordionItem>
 
                     {/* Edit modal */}
-                    <Modal
+                    <EditModal
                       onClose={closeEditModal}
-                      isShown={openedEditModalId === id}
-                    >
-                      <Modal.Header
-                        title={`Group "${groupName}" settings`}
-                        onClose={closeEditModal}
-                      />
-                      <Modal.Content>
-                        <SectionHeading marginBottom={`spacingM`}>
-                          Group name
-                        </SectionHeading>
-                        <TextInput
-                          defaultValue={groupName}
-                          onChange={(e) => setModalGroupName(e.target.value)}
-                        />
-                        <Modal.Controls>
-                          <Button variant={`negative`} onClick={closeEditModal}>
-                            Cancel
-                          </Button>
-                          <Button
-                            variant={`positive`}
-                            onClick={() => handleModalSave(id)}
-                          >
-                            Confirm changes
-                          </Button>
-                        </Modal.Controls>
-                      </Modal.Content>
-                    </Modal>
+                      modalId={openedEditModalId}
+                      groupId={id}
+                      groupName={groupName}
+                      setModalGroupName={setModalGroupName}
+                      handleModalSave={handleModalSave}
+                    />
 
                     {/* Delete modal */}
-                    <Modal
+                    <DeleteModal
                       onClose={closeDeleteModal}
-                      isShown={openedDeleteModalId === id}
-                    >
-                      <Modal.Header
-                        title={`Delete "${groupName}" group`}
-                        onClose={closeDeleteModal}
-                      />
-                      <Modal.Content>
-                        <Paragraph>
-                          Are you sure you want to delete &quot;
-                          <b>{groupName}</b>&quot; group?
-                        </Paragraph>
-                        <Paragraph>
-                          This action will delete the group with all of
-                          it&apos;s defined colors!
-                        </Paragraph>
-                        <Note variant={`warning`}>
-                          You can reverse this action by refreshing the page
-                          without clicking <b>Save</b>, but that will reset all
-                          of your unsaved changes!
-                        </Note>
-                        <Modal.Controls>
-                          <Button
-                            variant={`transparent`}
-                            onClick={closeDeleteModal}
-                          >
-                            Cancel
-                          </Button>
-                          <Button
-                            variant={`negative`}
-                            onClick={() => handleDeleteGroup(id, groupName)}
-                          >
-                            Delete group
-                          </Button>
-                        </Modal.Controls>
-                      </Modal.Content>
-                    </Modal>
+                      modalId={openedDeleteModalId}
+                      groupId={id}
+                      groupName={groupName}
+                      handleDeleteGroup={handleDeleteGroup}
+                    />
                   </React.Fragment>
                 );
               })}
