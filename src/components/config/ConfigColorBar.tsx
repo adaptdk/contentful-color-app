@@ -5,18 +5,31 @@ import {
   Card,
   DragHandle,
   Flex,
+  FormLabel,
   IconButton,
   Popover,
   TextInput,
   Tooltip,
 } from "@contentful/f36-components";
 import { DeleteIcon } from "@contentful/f36-icons";
+import tokens from "@contentful/f36-tokens";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { css } from "emotion";
 import React from "react";
 import { useState } from "react";
 import { Color, ColorPicker, toColor, useColor } from "react-color-palette";
+
+const inputLabelStyles = css({
+  margin: 0,
+  marginLeft: tokens.spacingXs,
+  fontWeight: tokens.fontWeightDemiBold,
+  color: tokens.gray900,
+  fontSize: `0.675rem`,
+  lineHeight: tokens.lineHeightS,
+  letterSpacing: tokens.letterSpacingWide,
+  textTransform: `uppercase`,
+});
 
 export const ConfigColorBar = ({ id, label, hexColor, onChange }: any) => {
   const [color, setColor] = useColor(`hex`, hexColor);
@@ -68,7 +81,7 @@ export const ConfigColorBar = ({ id, label, hexColor, onChange }: any) => {
     >
       <Flex
         padding={`spacingM`}
-        alignItems={`center`}
+        alignItems={`flex-end`}
         justifyContent={`center`}
         className={css({
           gap: `1rem`,
@@ -91,6 +104,10 @@ export const ConfigColorBar = ({ id, label, hexColor, onChange }: any) => {
                 borderRadius: `6px`,
                 cursor: `pointer`,
                 flexShrink: 0,
+                transition: `box-shadow 0.1s ease`,
+                ":hover": {
+                  boxShadow: tokens.boxShadowDefault,
+                },
               })}
             />
           </Popover.Trigger>
@@ -105,16 +122,22 @@ export const ConfigColorBar = ({ id, label, hexColor, onChange }: any) => {
             </Box>
           </Popover.Content>
         </Popover>
-        <TextInput
-          size={`small`}
-          value={hexColor}
-          onChange={(e) => handleChange(e.target.value)}
-        />
-        <TextInput
-          size={`small`}
-          value={label}
-          onChange={(e) => setLabelValue(e)}
-        />
+        <Flex flexBasis={`50%`} flexDirection={`column`}>
+          <FormLabel className={inputLabelStyles}>HEX</FormLabel>
+          <TextInput
+            size={`small`}
+            value={hexColor}
+            onChange={(e) => handleChange(e.target.value)}
+          />
+        </Flex>
+        <Flex flexBasis={`50%`} flexDirection={`column`}>
+          <FormLabel className={inputLabelStyles}>Label</FormLabel>
+          <TextInput
+            size={`small`}
+            value={label}
+            onChange={(e) => setLabelValue(e)}
+          />
+        </Flex>
         <Tooltip placement={`top`} content={`Delete color`}>
           <IconButton
             aria-label={`Delete color`}

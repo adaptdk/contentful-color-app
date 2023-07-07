@@ -313,7 +313,12 @@ const ConfigScreen = () => {
           </Tabs.List>
 
           <Tabs.Panel id="first">
-            <Accordion className={css({ marginBottom: `2rem` })}>
+            <Accordion
+              className={css({
+                marginBottom: `2rem`,
+                ":first-child": { borderTop: `none` },
+              })}
+            >
               {colorGroups?.map(({ id, groupName, definedColors }) => {
                 if (!groupName && !definedColors) {
                   return null;
