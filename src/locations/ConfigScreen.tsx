@@ -1,55 +1,19 @@
-import { json } from "@codemirror/lang-json";
 import { ConfigAppSDK } from "@contentful/app-sdk";
-import {
-  Accordion,
-  AccordionItem,
-  Button,
-  Flex,
-  Form,
-  IconButton,
-  Notification,
-  SectionHeading,
-  Tabs,
-  Tooltip,
-} from "@contentful/f36-components";
-import { DeleteIcon, EditIcon, PlusIcon } from "@contentful/f36-icons";
-import tokens from "@contentful/f36-tokens";
+import { Flex, Form, Tabs } from "@contentful/f36-components";
 import { useSDK } from "@contentful/react-apps-toolkit";
-import { DndContext, DragEndEvent } from "@dnd-kit/core";
-import { SortableContext } from "@dnd-kit/sortable";
-import ReactCodeMirror from "@uiw/react-codemirror";
 import { css } from "emotion";
 import React, { useCallback, useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
-import { ColorBox } from "../components/ColorBox";
 import { ColorSection } from "../components/config/ColorSection";
-import { ConfigColorBar } from "../components/config/ConfigColorBar";
-import { DeleteModal } from "../components/config/DeleteModal";
-import { EditModal } from "../components/config/EditModal";
+import { TabPanelGUI } from "../components/config/TabPanelGUI";
+import { TabPanelJSON } from "../components/config/TabPanelJSON";
 import { WelcomeSection } from "../components/config/WelcomeSection";
-import { getRandomItem } from "../utils/getRandomItem";
-
-export type TypeDefinedColor = {
-  id: string;
-  label: string;
-  hexColor: string;
-};
-
-export type TypeColorGroup = {
-  id: string;
-  groupName: string;
-  definedColors: Array<TypeDefinedColor>;
-};
+import { TypeColorGroup } from "../utils/types";
 
 export interface AppInstallationParameters {
   colorGroups: Array<TypeColorGroup>;
 }
-
-const groupToolbarStyles = css({
-  backgroundColor: tokens.gray200,
-  borderRadius: tokens.borderRadiusMedium,
-});
 
 const ConfigScreen = () => {
   const [parameters, setParameters] = useState<AppInstallationParameters>({
@@ -64,9 +28,6 @@ const ConfigScreen = () => {
   const [colorGroups, setColorGroups] = useState<
     AppInstallationParameters[`colorGroups`]
   >(parameters.colorGroups || []);
-  const [openedEditModalId, setOpenedEditModalId] = useState<string>(``);
-  const [openedDeleteModalId, setOpenedDeleteModalId] = useState<string>(``);
-  const [modalGroupName, setModalGroupName] = useState<string>(``);
 
   const sdk = useSDK<ConfigAppSDK>();
 
@@ -138,162 +99,6 @@ const ConfigScreen = () => {
     })();
   }, [sdk]);
 
-  const onChange = ({
-    id,
-    label,
-    hexColor,
-    remove,
-  }: TypeDefinedColor & { remove?: boolean }) => {
-    const updatedColorGroups = [...colorGroups];
-    const groupIndex = updatedColorGroups.findIndex((group) =>
-      group.definedColors.some((color) => color.id === id)
-    );
-
-    if (groupIndex >= 0) {
-      const colorIndex = updatedColorGroups[groupIndex].definedColors.findIndex(
-        (color) => color.id === id
-      );
-
-      if (colorIndex >= 0) {
-        if (remove) {
-          updatedColorGroups[groupIndex].definedColors.splice(colorIndex, 1);
-          setColorGroups(updatedColorGroups);
-          return;
-        }
-
-        if (hexColor || hexColor === ``) {
-          updatedColorGroups[groupIndex].definedColors[colorIndex].hexColor =
-            hexColor;
-        }
-
-        if (label || label === ``) {
-          updatedColorGroups[groupIndex].definedColors[colorIndex].label =
-            label;
-        }
-
-        setColorGroups(updatedColorGroups);
-      }
-    }
-  };
-
-  const handleAddItem = (groupId: string) => {
-    const updatedColorGroups = [...colorGroups];
-    const groupIndex = updatedColorGroups.findIndex(
-      (group) => group.id === groupId
-    );
-
-    if (groupIndex >= 0) {
-      const group = updatedColorGroups[groupIndex];
-      group.definedColors.push({ id: uuidv4(), label: ``, hexColor: `#000` });
-
-      setColorGroups(updatedColorGroups);
-    }
-  };
-
-  const handleAddGroup = () => {
-    const updatedColorGroups = [...colorGroups];
-    updatedColorGroups.push({
-      id: uuidv4(),
-      groupName: `Untitled group`,
-      definedColors: [],
-    });
-
-    setColorGroups(updatedColorGroups);
-  };
-
-  const handleDeleteGroup = (groupId: string, name: string) => {
-    const updatedGroups = colorGroups.filter(({ id }) => id !== groupId);
-    setColorGroups(updatedGroups);
-    Notification.success(`Deleted group "${name}"`);
-  };
-
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-
-    if (active && over && active.id !== over.id) {
-      setColorGroups((groups) => {
-        const updatedGroups = [...groups];
-
-        // Find the source color and target color within their respective groups
-        const sourceGroupIndex = updatedGroups.findIndex((group) =>
-          group.definedColors.some((color) => color.id === active.id)
-        );
-        const targetGroupIndex = updatedGroups.findIndex((group) =>
-          group.definedColors.some((color) => color.id === over.id)
-        );
-
-        if (sourceGroupIndex >= 0 && targetGroupIndex >= 0) {
-          const sourceGroup = updatedGroups[sourceGroupIndex];
-          const targetGroup = updatedGroups[targetGroupIndex];
-
-          // Find the source color and target color indices within their groups
-          const sourceIndex = sourceGroup.definedColors.findIndex(
-            (color) => color.id === active.id
-          );
-          const targetIndex = targetGroup.definedColors.findIndex(
-            (color) => color.id === over.id
-          );
-
-          if (sourceIndex >= 0 && targetIndex >= 0) {
-            // Move the color from the source group to the target group
-            const [removedColor] = sourceGroup.definedColors.splice(
-              sourceIndex,
-              1
-            );
-            targetGroup.definedColors.splice(targetIndex, 0, removedColor);
-          }
-        }
-
-        return updatedGroups;
-      });
-    }
-  };
-
-  const handleEditModalOpen = (id: string) => {
-    setOpenedEditModalId(id);
-  };
-
-  const handleDeleteModalOpen = (id: string) => {
-    setOpenedDeleteModalId(id);
-  };
-
-  const handleModalSave = (groupId: string) => {
-    const updatedColorGroups = [...colorGroups];
-    const groupIndexToUpdate = updatedColorGroups.findIndex(
-      ({ id }) => id === groupId
-    );
-
-    if (groupIndexToUpdate >= 0 && modalGroupName) {
-      updatedColorGroups[groupIndexToUpdate].groupName = modalGroupName;
-      setColorGroups(updatedColorGroups);
-
-      closeEditModal();
-    } else {
-      Notification.error(`Change group name before confirming`);
-    }
-
-    setModalGroupName(``);
-  };
-
-  const closeEditModal = () => {
-    setOpenedEditModalId(``);
-  };
-
-  const closeDeleteModal = () => {
-    setOpenedDeleteModalId(``);
-  };
-
-  const handleEditor = (text: string) => {
-    try {
-      setColorGroups(JSON.parse(text));
-      Notification.closeAll();
-    } catch (e: any) {
-      Notification.closeAll();
-      console.log(e);
-      Notification.error(`${e?.name}: There's an error in your JSON!`);
-    }
-  };
-
   return (
     <Flex
       flexDirection={`column`}
@@ -312,133 +117,14 @@ const ConfigScreen = () => {
             <Tabs.Tab panelId="second">JSON</Tabs.Tab>
           </Tabs.List>
 
-          <Tabs.Panel id="first">
-            <Accordion
-              className={css({
-                marginBottom: `2rem`,
-                ":first-child": { borderTop: `none` },
-              })}
-            >
-              {colorGroups?.map(({ id, groupName, definedColors }) => {
-                if (!groupName && !definedColors) {
-                  return null;
-                }
-
-                const randomColor: TypeDefinedColor =
-                  getRandomItem(definedColors);
-
-                return (
-                  <React.Fragment key={id}>
-                    <AccordionItem
-                      titleElement={`h3`}
-                      title={
-                        <Flex
-                          className={css({ fontSize: `1rem` })}
-                          justifyContent={`center`}
-                          alignItems={`center`}
-                          gap={`0.5rem`}
-                        >
-                          <ColorBox color={randomColor} /> {groupName}
-                        </Flex>
-                      }
-                      className={css({ width: `100%` })}
-                    >
-                      <Flex
-                        className={groupToolbarStyles}
-                        marginBottom={`spacingM`}
-                        justifyContent={`space-between`}
-                        alignItems={`center`}
-                      >
-                        <SectionHeading
-                          marginLeft={`spacingM`}
-                          marginBottom={`none`}
-                        >
-                          Group settings
-                        </SectionHeading>
-                        <Flex>
-                          <Tooltip
-                            placement={`top`}
-                            content={`Edit group settings`}
-                          >
-                            <IconButton
-                              onClick={() => handleEditModalOpen(id)}
-                              variant={`transparent`}
-                              aria-label={`Edit group settings`}
-                              icon={<EditIcon />}
-                            />
-                          </Tooltip>
-                          <Tooltip placement={`top`} content={`Delete group`}>
-                            <IconButton
-                              onClick={() => handleDeleteModalOpen(id)}
-                              variant={`transparent`}
-                              aria-label={`Delete group`}
-                              icon={<DeleteIcon variant={`negative`} />}
-                            />
-                          </Tooltip>
-                        </Flex>
-                      </Flex>
-
-                      {/* Color input bar */}
-                      <DndContext onDragEnd={handleDragEnd}>
-                        <SortableContext items={definedColors}>
-                          {definedColors?.map((color) => (
-                            <ConfigColorBar
-                              key={color.id}
-                              {...color}
-                              onChange={onChange}
-                            />
-                          ))}
-                        </SortableContext>
-                      </DndContext>
-
-                      <Button
-                        startIcon={<PlusIcon />}
-                        variant={`positive`}
-                        onClick={() => handleAddItem(id)}
-                      >
-                        Add Color
-                      </Button>
-                    </AccordionItem>
-
-                    {/* Edit modal */}
-                    <EditModal
-                      onClose={closeEditModal}
-                      modalId={openedEditModalId}
-                      groupId={id}
-                      groupName={groupName}
-                      setModalGroupName={setModalGroupName}
-                      handleModalSave={handleModalSave}
-                    />
-
-                    {/* Delete modal */}
-                    <DeleteModal
-                      onClose={closeDeleteModal}
-                      modalId={openedDeleteModalId}
-                      groupId={id}
-                      groupName={groupName}
-                      handleDeleteGroup={handleDeleteGroup}
-                    />
-                  </React.Fragment>
-                );
-              })}
-            </Accordion>
-            <Button
-              startIcon={<PlusIcon />}
-              variant={`positive`}
-              onClick={() => handleAddGroup()}
-            >
-              Add Group
-            </Button>
-          </Tabs.Panel>
-
-          <Tabs.Panel id="second">
-            <ReactCodeMirror
-              maxHeight={`600px`}
-              value={JSON.stringify(colorGroups, null, 2)}
-              extensions={[json()]}
-              onChange={handleEditor}
-            />
-          </Tabs.Panel>
+          <TabPanelGUI
+            colorGroups={colorGroups}
+            setColorGroups={setColorGroups}
+          />
+          <TabPanelJSON
+            colorGroups={colorGroups}
+            setColorGroups={setColorGroups}
+          />
         </Tabs>
       </Form>
     </Flex>

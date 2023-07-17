@@ -20,6 +20,8 @@ import React from "react";
 import { useState } from "react";
 import { Color, ColorPicker, toColor, useColor } from "react-color-palette";
 
+import { TypeColorGroupsState } from "../../utils/types";
+
 const inputLabelStyles = css({
   margin: 0,
   marginLeft: tokens.spacingXs,
@@ -31,12 +33,64 @@ const inputLabelStyles = css({
   textTransform: `uppercase`,
 });
 
-export const ConfigColorBar = ({ id, label, hexColor, onChange }: any) => {
+type TypeOnChange = {
+  id: string;
+  label?: string;
+  hexColor?: string;
+  remove?: boolean;
+};
+
+type TypeConfigColorBar = {
+  id: string;
+  label: string;
+  hexColor: string;
+} & TypeColorGroupsState;
+
+export const ConfigColorBar = ({
+  id,
+  label,
+  hexColor,
+  colorGroups,
+  setColorGroups,
+}: TypeConfigColorBar) => {
   const [color, setColor] = useColor(`hex`, hexColor);
   const [isOpen, setIsOpen] = useState(false);
 
   const { attributes, listeners, setNodeRef, transform, transition, active } =
     useSortable({ id });
+
+  const onChange = ({ id, label, hexColor, remove }: TypeOnChange) => {
+    const updatedColorGroups = [...colorGroups];
+    const groupIndex = updatedColorGroups.findIndex((group) =>
+      group.definedColors.some((color) => color.id === id)
+    );
+
+    if (groupIndex >= 0) {
+      const colorIndex = updatedColorGroups[groupIndex].definedColors.findIndex(
+        (color) => color.id === id
+      );
+
+      if (colorIndex >= 0) {
+        if (remove) {
+          updatedColorGroups[groupIndex].definedColors.splice(colorIndex, 1);
+          setColorGroups(updatedColorGroups);
+          return;
+        }
+
+        if (hexColor || hexColor === ``) {
+          updatedColorGroups[groupIndex].definedColors[colorIndex].hexColor =
+            hexColor;
+        }
+
+        if (label || label === ``) {
+          updatedColorGroups[groupIndex].definedColors[colorIndex].label =
+            label;
+        }
+
+        setColorGroups(updatedColorGroups);
+      }
+    }
+  };
 
   const zIndex = active && active.id === id ? 1 : 0;
   const style = {
@@ -48,7 +102,7 @@ export const ConfigColorBar = ({ id, label, hexColor, onChange }: any) => {
   const setLabelValue = (e: any) => {
     const { value } = e.target;
 
-    onChange({ id, label: value });
+    onChange({ id, label: value as string });
   };
 
   const handleChange = (color: Color | string) => {
