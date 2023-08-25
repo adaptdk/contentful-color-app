@@ -1,19 +1,21 @@
-import { FieldAppSDK } from '@contentful/app-sdk';
-import { Button, ButtonGroup } from '@contentful/f36-components';
-import { ChevronDownIcon, CloseIcon } from '@contentful/f36-icons';
-import { useSDK } from '@contentful/react-apps-toolkit';
-import { css } from 'emotion';
-import { forwardRef, Ref } from 'react';
-import { TypeDefinedColor } from '../locations/ConfigScreen';
-import { ColorOptionItem } from './ColorOptionItem';
+import { FieldAppSDK } from "@contentful/app-sdk";
+import { Button, ButtonGroup } from "@contentful/f36-components";
+import { ChevronDownIcon, CloseIcon } from "@contentful/f36-icons";
+import { useSDK } from "@contentful/react-apps-toolkit";
+import { css } from "emotion";
+import React from "react";
+import { forwardRef, Ref } from "react";
+
+import { TypeDefinedColor } from "../locations/ConfigScreen";
+import { ColorOptionItem } from "./ColorOptionItem";
 
 const styles = {
   buttonGroup: css({
-    width: '100%',
-    justifyContent: 'stretch',
+    width: `100%`,
+    justifyContent: `stretch`,
   }),
   pickerButton: css({
-    maxWidth: '100%',
+    maxWidth: `100%`,
     flexGrow: 1,
   }),
 };

@@ -1,5 +1,6 @@
 import { GlobalStyles } from "@contentful/f36-components";
 import { SDKProvider } from "@contentful/react-apps-toolkit";
+import React from "react";
 import { render } from "react-dom";
 
 import App from "./App";
