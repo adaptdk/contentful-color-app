@@ -83,35 +83,33 @@ export const TabPanelGUI = ({
 
     if (active && over && active.id !== over.id) {
       setColorGroups((groups) => {
-        const updatedGroups = [...groups];
+        const updatedGroups = groups.map((group) => ({
+          ...group,
+          // Create a copy of the definedColors array
+          definedColors: [...group.definedColors],
+        }));
 
-        // Find the source color and target color within their respective groups
-        const sourceGroupIndex = updatedGroups.findIndex((group) =>
+        const sourceGroup = updatedGroups.find((group) =>
           group.definedColors.some((color) => color.id === active.id)
         );
-        const targetGroupIndex = updatedGroups.findIndex((group) =>
+        const targetGroup = updatedGroups.find((group) =>
           group.definedColors.some((color) => color.id === over.id)
         );
 
-        if (sourceGroupIndex >= 0 && targetGroupIndex >= 0) {
-          const sourceGroup = updatedGroups[sourceGroupIndex];
-          const targetGroup = updatedGroups[targetGroupIndex];
-
-          // Find the source color and target color indices within their groups
-          const sourceIndex = sourceGroup.definedColors.findIndex(
+        if (sourceGroup && targetGroup) {
+          const sourceColorIndex = sourceGroup.definedColors.findIndex(
             (color) => color.id === active.id
           );
-          const targetIndex = targetGroup.definedColors.findIndex(
+          const targetColorIndex = targetGroup.definedColors.findIndex(
             (color) => color.id === over.id
           );
 
-          if (sourceIndex >= 0 && targetIndex >= 0) {
-            // Move the color from the source group to the target group
-            const [removedColor] = sourceGroup.definedColors.splice(
-              sourceIndex,
+          if (sourceColorIndex >= 0 && targetColorIndex >= 0) {
+            const [movedColor] = sourceGroup.definedColors.splice(
+              sourceColorIndex,
               1
             );
-            targetGroup.definedColors.splice(targetIndex, 0, removedColor);
+            targetGroup.definedColors.splice(targetColorIndex, 0, movedColor);
           }
         }
 
@@ -156,6 +154,7 @@ export const TabPanelGUI = ({
                   setOpenedDeleteModalId={setOpenedDeleteModalId}
                   setOpenedEditModalId={setOpenedEditModalId}
                 />
+
                 {/* Color input bar */}
                 <DndContext onDragEnd={handleDragEnd}>
                   <SortableContext items={definedColors}>
