@@ -7,7 +7,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import { ColorOptionItem } from "../components/ColorOptionItem";
 import { SelectColorButton } from "../components/SelectColorButton";
-import { TypeColorGroup, TypeDefinedColor } from "./ConfigScreen";
+import { TypeColorGroup, TypeDefinedColor } from "../utils/types";
 
 const styles = {
   displayNone: css({

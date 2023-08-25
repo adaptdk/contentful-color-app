@@ -2,7 +2,7 @@ import { Box } from "@contentful/f36-components";
 import { css } from "emotion";
 import React, { ElementType } from "react";
 
-import { TypeDefinedColor } from "../locations/ConfigScreen";
+import { TypeDefinedColor } from "../utils/types";
 
 const styles = {
   colorBox: (color: string, size?: string, as?: ElementType<any>) =>

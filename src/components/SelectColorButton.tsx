@@ -6,7 +6,7 @@ import { css } from "emotion";
 import React from "react";
 import { forwardRef, Ref } from "react";
 
-import { TypeDefinedColor } from "../locations/ConfigScreen";
+import { TypeDefinedColor } from "../utils/types";
 import { ColorOptionItem } from "./ColorOptionItem";
 
 const styles = {

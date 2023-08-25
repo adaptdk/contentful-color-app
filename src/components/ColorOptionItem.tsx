@@ -3,7 +3,7 @@ import tokens from "@contentful/f36-tokens";
 import { css } from "emotion";
 import React from "react";
 
-import { TypeDefinedColor } from "../locations/ConfigScreen";
+import { TypeDefinedColor } from "../utils/types";
 import { ColorBox } from "./ColorBox";
 
 const style = css({
