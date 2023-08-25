@@ -8,6 +8,12 @@ export const ColorSection = () => (
       You can edit your colors either via a graphical user interface, or via
       JSON!
     </Paragraph>
+    <Paragraph>
+      Upon your first installation of the application, you will immediately
+      encounter a pre-configured color group containing a single color. This
+      serves as an illustrative example, allowing you to visualize the structure
+      of JSON data within the application.
+    </Paragraph>
     <Note variant={`primary`}>
       The actual <code>value</code> saved in a field is the color{` `}
       <b>label </b>
