@@ -5,9 +5,10 @@ export const ColorSection = () => (
   <React.Fragment>
     <SectionHeading>Color definitions</SectionHeading>
     <Paragraph>
-      You can edit your colors either via a graphical user interface, or via
-      JSON!
+      You have the flexibility to modify your colors using either the graphical
+      user interface or JSON.
     </Paragraph>
+    <SectionHeading>Initial Installation</SectionHeading>
     <Paragraph>
       Upon your first installation of the application, you will immediately
       encounter a pre-configured color group containing a single color. This

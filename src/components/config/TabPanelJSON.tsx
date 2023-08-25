@@ -1,5 +1,5 @@
 import { json } from "@codemirror/lang-json";
-import { Notification, Tabs } from "@contentful/f36-components";
+import { Note, Notification, Tabs } from "@contentful/f36-components";
 import ReactCodeMirror from "@uiw/react-codemirror";
 import React from "react";
 
@@ -22,6 +22,10 @@ export const TabPanelJSON = ({
 
   return (
     <Tabs.Panel id="second">
+      <Note variant={`primary`} style={{ marginBlock: `2rem` }}>
+        The JSON you modify is dynamically synchronized, providing instantaneous
+        visualization of your changes within the GUI panel.
+      </Note>
       <ReactCodeMirror
         maxHeight={`600px`}
         value={JSON.stringify(colorGroups, null, 2)}

@@ -1,5 +1,5 @@
 import { ConfigAppSDK } from "@contentful/app-sdk";
-import { Flex, Form, Tabs } from "@contentful/f36-components";
+import { Flex, Form, SectionHeading, Tabs } from "@contentful/f36-components";
 import { useSDK } from "@contentful/react-apps-toolkit";
 import { css } from "emotion";
 import React, { useCallback, useEffect, useState } from "react";
@@ -110,13 +110,16 @@ const ConfigScreen = () => {
         <WelcomeSection user={sdk.user} />
         <ColorSection />
 
+        <SectionHeading style={{ marginTop: `2rem` }}>
+          Editing Options
+        </SectionHeading>
         <Tabs defaultTab={`first`}>
           <Tabs.List
             className={css({ marginBottom: `2rem` })}
             variant={`horizontal-divider`}
           >
-            <Tabs.Tab panelId="first">GUI</Tabs.Tab>
-            <Tabs.Tab panelId="second">JSON</Tabs.Tab>
+            <Tabs.Tab panelId="first">GUI Editor</Tabs.Tab>
+            <Tabs.Tab panelId="second">JSON Editor</Tabs.Tab>
           </Tabs.List>
 
           <TabPanelGUI
