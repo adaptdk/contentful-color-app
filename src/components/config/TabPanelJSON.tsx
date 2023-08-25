@@ -1,6 +1,7 @@
 import { json } from "@codemirror/lang-json";
 import { Note, Notification, Tabs } from "@contentful/f36-components";
 import ReactCodeMirror from "@uiw/react-codemirror";
+import { css } from "emotion";
 import React from "react";
 
 import { TypeColorGroupsState } from "../../utils/types";
@@ -22,7 +23,7 @@ export const TabPanelJSON = ({
 
   return (
     <Tabs.Panel id="second">
-      <Note variant={`primary`} style={{ marginBlock: `2rem` }}>
+      <Note variant={`primary`} className={css({ marginBottom: `2rem` })}>
         The JSON you modify is dynamically synchronized, providing instantaneous
         visualization of your changes within the GUI panel.
       </Note>

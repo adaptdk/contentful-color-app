@@ -1,11 +1,12 @@
 import { Flex, Note, Paragraph, TextLink } from "@contentful/f36-components";
+import { css } from "emotion";
 import React from "react";
 
 const LocalhostWarning = () => (
   <Flex marginTop="spacingXl" justifyContent="center">
     <Note
       title="App running outside of Contentful"
-      style={{ maxWidth: `800px` }}
+      className={css({ maxWidth: `800px` })}
     >
       <Paragraph>
         Contentful Apps need to run inside the Contentful web app to function

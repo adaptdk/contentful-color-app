@@ -110,7 +110,7 @@ const ConfigScreen = () => {
         <WelcomeSection user={sdk.user} />
         <ColorSection />
 
-        <SectionHeading style={{ marginTop: `2rem` }}>
+        <SectionHeading className={css({ marginTop: `2rem` })}>
           Editing Options
         </SectionHeading>
         <Tabs defaultTab={`first`}>

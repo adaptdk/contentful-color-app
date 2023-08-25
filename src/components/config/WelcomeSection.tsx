@@ -14,7 +14,7 @@ export const WelcomeSection = ({ user }: TypeWelcomeSection) => (
     <Heading>{APP_TITLE}</Heading>
     <Heading
       as={`h2`}
-      style={{ display: `flex`, alignItems: `center`, gap: `0.25rem` }}
+      className={css({ display: `flex`, alignItems: `center`, gap: `0.25rem` })}
     >
       Hi,{` `}
       <img
