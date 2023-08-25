@@ -21,7 +21,9 @@ const ConfigScreen = () => {
       {
         id: uuidv4(),
         groupName: `Default`,
-        definedColors: [],
+        definedColors: [
+          { id: uuidv4(), label: `lime-50`, hexColor: `#efffd2` },
+        ],
       },
     ],
   });
