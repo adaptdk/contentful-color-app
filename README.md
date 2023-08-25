@@ -1,16 +1,56 @@
+# Adaptive Colors
 This project was bootstrapped with [Create Contentful App](https://github.com/contentful/create-contentful-app).
 
-https://github.com/adaptdk/contentful-color-app/assets/69549795/66af738f-3a59-4e6b-b5b8-01416ed32271
+## Table of Contents
+1. [Examples](#examples)
+    1. [Configure via GUI](#configure-via-gui)
+    2. [Configure via JSON](#configure-via-json)
+    3. [Defined colors in a content field](#access-all-defined-colors-in-a-content-field)
+    4. [Validated colors in a content field](#access-only-validated-colors-in-a-content-field)
+2. [How to use](#how-to-use)
+3. [Available scripts](#available-scripts)
+4. [Libraries to use](#libraries-to-use)
+5. [Contentful Management SDK](#using-the-contentful-management-sdk)
+6. [Learn more](#learn-more)
 
 ## Examples
 ### Configure via GUI
-![image](https://github.com/adaptdk/contentful-color-app/assets/69549795/2031544d-7786-4620-a797-fd53a30a85c1)
+<details>
+  <summary>Image 1</summary>
+  
+![image](https://github.com/adaptdk/contentful-color-app/assets/69549795/6af534ad-1929-4083-bdc4-aaa733e1f460)
+</details>
+<details>
+  <summary>Image 2</summary>
+  
+![image](https://github.com/adaptdk/contentful-color-app/assets/69549795/5a51ea27-9831-4cf3-a84a-e7f8b130ef71)
+</details>
+
 ### Configure via JSON
-![image](https://github.com/adaptdk/contentful-color-app/assets/69549795/4b36e1a3-8200-403a-bc70-2d8b1fb9f658)
+<details>
+  <summary>Image</summary>
+
+  ![image](https://github.com/adaptdk/contentful-color-app/assets/69549795/4383de08-02e8-4053-8933-4517ad506cd3)
+</details>
+
 ### Access all defined colors in a content field
-![image](https://github.com/adaptdk/contentful-color-app/assets/69549795/a6ad90d4-4683-4f12-ba06-b441b2ed2d29)
+<details>
+  <summary>Image</summary>
+
+  ![image](https://github.com/adaptdk/contentful-color-app/assets/69549795/d298663f-6001-4840-acd5-7ea846a2a45a)
+</details>
+
 ### Access only validated colors in a content field
-![image](https://github.com/adaptdk/contentful-color-app/assets/69549795/4b4a7800-6315-43cf-be00-8035a4cedc1f)
+<details>
+  <summary>Image 1</summary>
+
+  ![image](https://github.com/adaptdk/contentful-color-app/assets/69549795/ca8d64ce-4505-4247-85b1-a33d03b0bf48)
+</details>
+<details>
+  <summary>Image 2</summary>
+
+  ![image](https://github.com/adaptdk/contentful-color-app/assets/69549795/5406a1fb-861e-4b91-88b8-8ecf50571d6a)
+</details>
 
 ## How to use
 
