@@ -1,6 +1,12 @@
 # Adapt Toolkit: Color Tokens
 This project was bootstrapped with [Create Contentful App](https://github.com/contentful/create-contentful-app).
 
+## Bug reports
+If you've found any issues, please open an issue here: [https://github.com/adaptdk/adapt-toolkit-color-picker/issues](https://github.com/adaptdk/adapt-toolkit-color-picker/issues)
+
+## Feature requests
+If you think the application is missing any features, please open an issue here: [https://github.com/adaptdk/adapt-toolkit-color-picker/issues](https://github.com/adaptdk/adapt-toolkit-color-picker/issues)
+
 ## Table of Contents
 1. [Examples](#examples)
     1. [Configure via GUI](#configure-via-gui)
@@ -27,12 +33,12 @@ This project was bootstrapped with [Create Contentful App](https://github.com/co
 ### Configure via GUI
 <details>
   <summary>Image 1</summary>
-  
+
 ![image](https://github.com/adaptdk/contentful-color-app/assets/69549795/6af534ad-1929-4083-bdc4-aaa733e1f460)
 </details>
 <details>
   <summary>Image 2</summary>
-  
+
 ![image](https://github.com/adaptdk/contentful-color-app/assets/69549795/5a51ea27-9831-4cf3-a84a-e7f8b130ef71)
 </details>
 
@@ -170,7 +176,7 @@ Read [here](https://www.contentful.com/developers/docs/extensibility/app-framewo
 
 #### `npm run upload-ci`
 
-Similar to `npm run upload` it will upload your app to contentful and activate it. The only difference is  
+Similar to `npm run upload` it will upload your app to contentful and activate it. The only difference is
 that with this command all required arguments are read from the environment variables, for example when you add
 the upload command to your CI pipeline.
 
@@ -204,3 +210,5 @@ to find out more.
 ## Learn More
 
 [Read more](https://www.contentful.com/developers/docs/extensibility/app-framework/create-contentful-app/) and check out the video on how to use the CLI.
+
+[Privacy Policy](https://adaptagency.com/privacy-policy)
