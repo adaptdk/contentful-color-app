@@ -5,6 +5,7 @@ import { css } from "emotion";
 import React, { useCallback, useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
+import logo from "../assets/logo.svg";
 import { ColorSection } from "../components/config/ColorSection";
 import { TabPanelGUI } from "../components/config/TabPanelGUI";
 import { TabPanelJSON } from "../components/config/TabPanelJSON";
@@ -106,7 +107,19 @@ const ConfigScreen = () => {
       flexDirection={`column`}
       className={css({ margin: `5rem auto`, maxWidth: `800px` })}
     >
-      <Form>
+      <Form className={css({ position: `relative` })}>
+        <img
+          src={logo}
+          width={64}
+          height={64}
+          className={css({
+            borderRadius: `50%`,
+            position: `absolute`,
+            right: `1rem`,
+            top: 0,
+          })}
+          alt="Adapt logo"
+        />
         <WelcomeSection user={sdk.user} />
         <ColorSection />
 
