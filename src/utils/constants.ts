@@ -1,1 +1,1 @@
-export const APP_TITLE = `Adapt Toolkit: Color Tokens`;
+export const APP_TITLE = `Adapt Essentials: Colors`;

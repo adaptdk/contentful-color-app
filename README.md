@@ -1,4 +1,4 @@
-# Adapt Toolkit: Color Tokens
+# Adapt Essentials: Colors
 This project was bootstrapped with [Create Contentful App](https://github.com/contentful/create-contentful-app).
 
 ## Bug reports
@@ -110,7 +110,7 @@ After you're done configuring your color design system, using it is extremely si
 
 ![image](https://github.com/adaptdk/adapt-toolkit-color-picker/assets/69549795/13cf47f5-037e-4037-9f26-d7d8d6b37dea)
 
-2. In the newly created field's settings, scroll down to the **Appearance** section and select **Adapt Toolkit: Color Tokens**
+2. In the newly created field's settings, scroll down to the **Appearance** section and select **Adapt Essentials: Colors**
 
 ![image](https://github.com/adaptdk/adapt-toolkit-color-picker/assets/69549795/64589d0e-e798-40fa-8e60-01c38b06a28e)
 
