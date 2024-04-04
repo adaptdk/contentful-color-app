@@ -1,3 +1,8 @@
+# ℹ️ 2024 April 4th: Archiving the repository since we decided to instead improve the official [Contentful Color picker](https://github.com/contentful/apps/tree/master/apps/color-picker) by contributing to their repository.
+
+
+---
+
 # Adapt Essentials: Colors
 This project was bootstrapped with [Create Contentful App](https://github.com/contentful/create-contentful-app).
 
